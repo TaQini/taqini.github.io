@@ -191,13 +191,13 @@
       
         <tags>
             
+            <tag> pwn </tag>
+            
             <tag> uaf </tag>
             
             <tag> double free </tag>
             
             <tag> fastbin attack </tag>
-            
-            <tag> pwn </tag>
             
             <tag> glibc heap </tag>
             
@@ -356,11 +356,11 @@
       
         <tags>
             
-            <tag> pwn </tag>
-            
             <tag> CTF </tag>
             
             <tag> CTFd </tag>
+            
+            <tag> pwn </tag>
             
         </tags>
       
@@ -468,11 +468,11 @@
       
         <tags>
             
+            <tag> CTF </tag>
+            
             <tag> pwn </tag>
             
             <tag> writeup </tag>
-            
-            <tag> CTF </tag>
             
             <tag> ROP </tag>
             
