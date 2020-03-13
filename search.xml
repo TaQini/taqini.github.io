@@ -333,9 +333,9 @@
       
         <tags>
             
-            <tag> pwn </tag>
-            
             <tag> GDB </tag>
+            
+            <tag> pwn </tag>
             
             <tag> PIE </tag>
             
@@ -364,11 +364,11 @@
       
         <tags>
             
+            <tag> pwn </tag>
+            
             <tag> CTF </tag>
             
             <tag> CTFd </tag>
-            
-            <tag> pwn </tag>
             
         </tags>
       
@@ -476,9 +476,9 @@
       
         <tags>
             
-            <tag> CTF </tag>
-            
             <tag> pwn </tag>
+            
+            <tag> CTF </tag>
             
             <tag> writeup </tag>
             
