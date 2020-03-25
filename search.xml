@@ -15,10 +15,6 @@
           
           <category> CTF </category>
           
-          <category> pwn </category>
-          
-          <category> writeup </category>
-          
       </categories>
       
       
@@ -210,10 +206,6 @@
           
           <category> CTF </category>
           
-          <category> pwn </category>
-          
-          <category> writeup </category>
-          
       </categories>
       
       
@@ -264,9 +256,7 @@
       
       <categories>
           
-          <category> writeup </category>
-          
-          <category> pwn </category>
+          <category> CTF </category>
           
       </categories>
       
@@ -355,7 +345,7 @@
       
       <categories>
           
-          <category> writeup </category>
+          <category> CTF </category>
           
       </categories>
       
@@ -485,7 +475,7 @@
       
       <categories>
           
-          <category> writeup </category>
+          <category> CTF </category>
           
       </categories>
       
@@ -543,7 +533,7 @@
       
       <categories>
           
-          <category> writeup </category>
+          <category> CTF </category>
           
       </categories>
       
@@ -673,9 +663,7 @@
       
       <categories>
           
-          <category> writeup </category>
-          
-          <category> pwn </category>
+          <category> CTF </category>
           
       </categories>
       
