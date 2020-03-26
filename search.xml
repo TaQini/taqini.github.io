@@ -265,13 +265,13 @@
             
             <tag> pwn </tag>
             
-            <tag> uaf </tag>
+            <tag> fastbin attack </tag>
             
             <tag> double free </tag>
             
-            <tag> fastbin attack </tag>
-            
             <tag> glibc heap </tag>
+            
+            <tag> uaf </tag>
             
             <tag> writeup </tag>
             
@@ -323,9 +323,9 @@
       
         <tags>
             
-            <tag> double free </tag>
-            
             <tag> fastbin attack </tag>
+            
+            <tag> double free </tag>
             
             <tag> glibc heap </tag>
             

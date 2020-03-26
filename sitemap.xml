@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://taqini.space/2020/03/23/bjd2nd-pwn-offical-wp/</loc>
+    
+    <lastmod>2020-03-26T09:38:29.199Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://taqini.space/2020/02/26/2020-Hgame-ROP5-writeup/</loc>
     
     <lastmod>2020-03-25T16:52:50.789Z</lastmod>
@@ -26,13 +33,6 @@
     <loc>http://taqini.space/2020/02/21/MetasequoiaCTF-writeup/</loc>
     
     <lastmod>2020-03-25T16:52:11.519Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://taqini.space/2020/03/23/bjd2nd-pwn-offical-wp/</loc>
-    
-    <lastmod>2020-03-25T16:51:44.260Z</lastmod>
     
   </url>
   
