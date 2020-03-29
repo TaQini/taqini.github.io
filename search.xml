@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>Pwn-Notebook解题本</title>
+      <link href="/2020/03/29/pwn-notebook/"/>
+      <url>/2020/03/29/pwn-notebook/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Pwn-Notebook-发布"><a href="#Pwn-Notebook-发布" class="headerlink" title="Pwn Notebook 发布~"></a>Pwn Notebook 发布~</h1><p><a href="http://image.taqini.space/img/20200329134931.png" data-fancybox="group" data-caption class="fancybox"><img alt title data-src="http://image.taqini.space/img/20200329134931.png" src="/img/loading.gif" class="lazyload"></a></p><p>以后wp什么的，就发到这里啦~</p><p>docsify轻便又好看，hexo你失宠啦哈哈哈哈</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> docsify </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> docsify </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>WUST-CTF2020-pwn-wp</title>
       <link href="/2020/03/28/WUST-CTF2020-pwn-wp/"/>
       <url>/2020/03/28/WUST-CTF2020-pwn-wp/</url>

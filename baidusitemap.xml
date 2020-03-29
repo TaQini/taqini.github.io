@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://taqini.space/2020/03/29/pwn-notebook/</loc>
+    <lastmod>2020-03-29</lastmod>
+  </url>  <url>
     <loc>http://taqini.space/2020/03/28/WUST-CTF2020-pwn-wp/</loc>
     <lastmod>2020-03-28</lastmod>
   </url>  <url>
