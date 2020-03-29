@@ -2,69 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://taqini.space/pwn-notebook/zh-cn/README.html</loc>
-    
-    <lastmod>2020-03-29T04:22:05.835Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://taqini.space/pwn-notebook/ctf/2020/bjd2nd/README.html</loc>
-    
-    <lastmod>2020-03-29T04:22:05.835Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://taqini.space/pwn-notebook/basic/README.html</loc>
-    
-    <lastmod>2020-03-29T04:22:05.835Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://taqini.space/pwn-notebook/ctf/2020/bjd2nd/og.html</loc>
-    
-    <lastmod>2020-03-29T04:22:05.835Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://taqini.space/pwn-notebook/ctf/2020/bjd2nd/sidebar.html</loc>
-    
-    <lastmod>2020-03-29T04:22:05.835Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://taqini.space/pwn-notebook/ctf/2020/README.html</loc>
-    
-    <lastmod>2020-03-29T04:22:05.835Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://taqini.space/pwn-notebook/ctf/README.html</loc>
-    
-    <lastmod>2020-03-29T04:22:05.835Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://taqini.space/pwn-notebook/rop/README.html</loc>
-    
-    <lastmod>2020-03-29T04:22:05.835Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://taqini.space/pwn-notebook/heap/README.html</loc>
-    
-    <lastmod>2020-03-29T04:22:05.835Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://taqini.space/2020/03/28/WUST-CTF2020-pwn-wp/</loc>
     
     <lastmod>2020-03-28T02:25:29.013Z</lastmod>
