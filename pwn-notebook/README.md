@@ -12,3 +12,8 @@
 
 > [啦啦啦](//taqini.space)
 
+> [Emoji](emoji.md)大全
+
+> [开发日志](logs.md)
+
+
