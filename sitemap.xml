@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://taqini.space/about/index.html</loc>
+    
+    <lastmod>2020-03-31T18:00:05.842Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://taqini.space/2020/03/31/mrctf-2020-pwn-writewp/</loc>
     
     <lastmod>2020-03-31T15:04:59.250Z</lastmod>
@@ -33,13 +40,6 @@
     <loc>http://taqini.space/msgboard/index.html</loc>
     
     <lastmod>2020-03-30T19:38:07.410Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://taqini.space/about/index.html</loc>
-    
-    <lastmod>2020-03-30T19:03:33.194Z</lastmod>
     
   </url>
   
