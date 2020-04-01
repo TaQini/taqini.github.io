@@ -15,10 +15,6 @@
           
           <category> CTF </category>
           
-          <category> pwn </category>
-          
-          <category> writeup </category>
-          
       </categories>
       
       
@@ -94,11 +90,11 @@
             
             <tag> re </tag>
             
+            <tag> misc </tag>
+            
             <tag> fsb </tag>
             
             <tag> ret2text </tag>
-            
-            <tag> misc </tag>
             
             <tag> crypto </tag>
             
@@ -626,9 +622,9 @@
             
             <tag> re </tag>
             
-            <tag> misc </tag>
-            
             <tag> ppc </tag>
+            
+            <tag> misc </tag>
             
         </tags>
       
@@ -684,19 +680,19 @@
             
             <tag> pwn </tag>
             
+            <tag> CTF </tag>
+            
             <tag> writeup </tag>
             
-            <tag> CTF </tag>
+            <tag> ROP </tag>
             
             <tag> re </tag>
             
-            <tag> fsb </tag>
-            
             <tag> misc </tag>
             
-            <tag> crypto </tag>
+            <tag> fsb </tag>
             
-            <tag> ROP </tag>
+            <tag> crypto </tag>
             
             <tag> 栈迁移 </tag>
             
