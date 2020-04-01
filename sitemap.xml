@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://taqini.space/todo/index.html</loc>
+    
+    <lastmod>2020-04-01T17:19:01.928Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://taqini.space/2020/02/18/pwn-docker/</loc>
     
     <lastmod>2020-04-01T15:59:42.096Z</lastmod>
@@ -26,13 +33,6 @@
     <loc>http://taqini.space/2020/03/31/alpha-shellcode-gen/</loc>
     
     <lastmod>2020-03-31T13:23:03.707Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://taqini.space/todo/index.html</loc>
-    
-    <lastmod>2020-03-31T09:20:39.681Z</lastmod>
     
   </url>
   
