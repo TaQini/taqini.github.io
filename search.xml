@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>Midnightsun CTF 2020 pwn4</title>
+      <link href="/2020/04/05/MidnightsunCTF-2020-pwn-pwn4/"/>
+      <url>/2020/04/05/MidnightsunCTF-2020-pwn-pwn4/</url>
+      
+        <content type="html"><![CDATA[<h2 id="pwn4"><a href="#pwn4" class="headerlink" title="pwn4"></a>pwn4</h2><ul><li><p>题目描述：</p><blockquote><p>An homage to pwny.racing, we present… speedrun pwn challenges. These bite-sized challenges should serve as a nice warm-up for your pwning skills.</p></blockquote></li><li><p>题目附件：<a href="https://cdn.jsdelivr.net/gh/TaQini/ctf@master/MidnightsunCTF2020/pwn/pwn4/pwn4" target="_blank" rel="noopener">pwn4</a></p></li><li><p>考察点：格式化字符串</p></li><li><p>难度：好难呀</p></li><li><p>初始分值：100</p></li><li><p>最终分值：172</p></li><li><p>完成人数：28</p></li></ul><h3 id="程序分析"><a href="#程序分析" class="headerlink" title="程序分析"></a>程序分析</h3><p>限制十分苛刻的一个格式化字符串漏洞，字符串长度只有13：</p><p><a href="http://image.taqini.space/img/2020-04-05_19-09.png" data-fancybox="group" data-caption class="fancybox"><img alt title data-src="http://image.taqini.space/img/2020-04-05_19-09.png" src="/img/loading.gif" class="lazyload"></a></p><ul><li><p><code>v10</code>是<code>mmap+mprotect</code>的一个随机整数，只读</p></li><li><p>格式化字符串漏洞在<code>log_attempt</code>中</p></li><li><p><code>v8</code>等于<code>v10</code>时给shell，但是<code>v8</code>是个4位数，基本上等于不了<code>v10</code></p></li><li><p><code>v10</code>在栈中可以通过<code>%25$p</code>泄漏，<code>v8</code>也在栈中可通过<code>%16$n</code>修改</p></li><li><p>程序是32位静态编译的，没有GOT表可改</p></li><li><p>格式化字符串长度为13，且只能用一次</p></li></ul><h3 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h3><p>由于漏洞只能利用一次，所以必须在<strong>泄漏<code>v10</code>的同时修改<code>v8</code></strong>，比赛的时候找了半天也不知道怎么搞…</p><p>而且如果用常规的<code>%&lt;N&gt;c</code>的方法去修改<code>v8</code>（<code>N</code>的长度在<code>1-10</code>之间），<code>13</code>字节的字符串根本不够用…  </p><blockquote><p><code>|(·_·) |·_·) |_·) |·) | )</code> 太难了…</p></blockquote><p>赛后看<a href="https://ctftime.org/writeup/19333?c=4566" target="_blank" rel="noopener">wp</a>，学到了新姿势：</p><blockquote><p>Basic idea:<br>Copy the secret (4 bytes) from the stack to our guess variable (also on the stack) and pass the check.</p><p><code>%&lt;N&gt;d</code>   normally this lets us print N characters total (a decimal int padded to N spaces).<br><code>%*25$d</code>  lets us choose the value of N from the stack, we choose 25$ -&gt; position of the secret value, this will therefore print a number of chars equal to the secret value.<br><code>%16$n</code>   will write the number of printed chars to our variable on the stack (position 16) that is then compared with the secret.</p><p>This will print <strong>A LOT</strong> of characters back (like 500MB of spaces), but works after trying a few times!</p></blockquote><hr><h4 id="记笔记！-的用法"><a href="#记笔记！-的用法" class="headerlink" title="记笔记！*的用法"></a>记笔记！<code>*</code>的用法</h4><ul><li><p><code>%&lt;N&gt;d</code>这个很常用，打印长度为N的字符串，和<code>%&lt;N&gt;c</code>差不多</p></li><li><p><code>%*25$d</code>从栈中取变量作为<code>N</code></p><blockquote><p>比如<code>25$</code>处的值是<code>0x100</code>，那么这个格式化字符串就相当于<code>%256d</code></p></blockquote></li></ul><p>那么可以理解为<code>*</code>相当于c语言取值符号…嘛？刨根问底一下，查看<code>man</code>文档，找到<code>*</code>的用方法：</p><p><a href="http://image.taqini.space/img/20200405185627.png" data-fancybox="group" data-caption class="fancybox"><img alt title data-src="http://image.taqini.space/img/20200405185627.png" src="/img/loading.gif" class="lazyload"></a></p><p>根据文档写个栗子：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">c</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> <span class="built_in">width</span>=<span class="number">10</span>;</span><br><span class="line">    <span class="keyword">int</span> num=<span class="number">2333</span>;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">"\ncase1:"</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%*d"</span>, <span class="built_in">width</span>, num);    </span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">"\ncase2:"</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%2$*1$d"</span>, <span class="built_in">width</span>, num);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div><p>输出如下：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">case1:</span><br><span class="line">      2333</span><br><span class="line">case2:</span><br><span class="line">      2333</span><br></pre></td></tr></table></figure></div><h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><ul><li><code>*</code>如果单独使用，则<strong>按顺序</strong>取参数列表中的参数</li><li><code>*</code>如果配合<code>$</code>使用，则取参数列表中<strong>相应位置</strong>的参数，如<code>*1$</code></li><li>取出的参数将格式化为<strong>十进制数</strong>，用作限制<strong>字符串宽度</strong></li></ul><h4 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h4><ul><li>缩短格式化字符串长度</li></ul><hr><p>回到题目，<code>%*25$d%16$n</code>可以把<code>v10</code>的值直接复制给<code>v8</code></p><p>用<code>%n</code>可能会一次打印好多字符，不过多试几次，当<code>v10</code>很小的时候很快的打印完了</p><p>写exp时可以使用<code>pwntools</code>的<code>clean</code>函数接受数据</p><h3 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h3><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">python</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">fmt = <span class="string">"%*25$d%16$n"</span></span><br><span class="line">sla(<span class="string">'user: '</span>,fmt)</span><br><span class="line"><span class="comment">#debug('b *0x08048a63')</span></span><br><span class="line">sla(<span class="string">'code: '</span>,<span class="string">'2333'</span>)</span><br><span class="line"></span><br><span class="line">p.clean(<span class="number">10</span>)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure></div><blockquote><p>clean(10): <strong>接受全部数据</strong>并<strong>清空缓冲区</strong>，timeout为10秒</p></blockquote>]]></content>
+      
+      
+      <categories>
+          
+          <category> CTF </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 格式化字符串 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>MidnightsunCTF 2020 Admpanel</title>
       <link href="/2020/04/04/Midnightsun-CTF-2020-pwn-Admpanel-wp/"/>
       <url>/2020/04/04/Midnightsun-CTF-2020-pwn-Admpanel-wp/</url>
@@ -72,6 +97,8 @@
             
             <tag> bof </tag>
             
+            <tag> 格式化字符串 </tag>
+            
             <tag> pwn </tag>
             
             <tag> ctf </tag>
@@ -81,8 +108,6 @@
             <tag> 静态编译 </tag>
             
             <tag> aplha shellcode </tag>
-            
-            <tag> 格式化字符串 </tag>
             
         </tags>
       
