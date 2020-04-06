@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://taqini.space/2020/04/05/AUCTF-2020-pwn-wp/</loc>
+    
+    <lastmod>2020-04-06T04:04:02.069Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://taqini.space/2020/04/04/MidnightsunCTF-2020-pwn-Admpanel2/</loc>
     
     <lastmod>2020-04-05T15:51:08.408Z</lastmod>
