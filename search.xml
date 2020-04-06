@@ -18,6 +18,20 @@
       </categories>
       
       
+        <tags>
+            
+            <tag> pwn </tag>
+            
+            <tag> ctf </tag>
+            
+            <tag> bof </tag>
+            
+            <tag> got overwrite </tag>
+            
+            <tag> one_gadget </tag>
+            
+        </tags>
+      
     </entry>
     
     
@@ -38,6 +52,8 @@
       
       
         <tags>
+            
+            <tag> pwn </tag>
             
             <tag> 格式化字符串 </tag>
             
@@ -66,6 +82,10 @@
             
             <tag> linux </tag>
             
+            <tag> pwn </tag>
+            
+            <tag> ctf </tag>
+            
         </tags>
       
     </entry>
@@ -88,6 +108,10 @@
       
       
         <tags>
+            
+            <tag> pwn </tag>
+            
+            <tag> ctf </tag>
             
             <tag> bof </tag>
             
@@ -114,13 +138,13 @@
       
         <tags>
             
-            <tag> bof </tag>
-            
-            <tag> 格式化字符串 </tag>
-            
             <tag> pwn </tag>
             
             <tag> ctf </tag>
+            
+            <tag> bof </tag>
+            
+            <tag> 格式化字符串 </tag>
             
             <tag> 萌新赛 </tag>
             
@@ -176,9 +200,9 @@
       
         <tags>
             
-            <tag> bof </tag>
-            
             <tag> pwn </tag>
+            
+            <tag> bof </tag>
             
             <tag> CTF </tag>
             
@@ -252,13 +276,13 @@
             
             <tag> linux </tag>
             
-            <tag> bof </tag>
-            
             <tag> pwn </tag>
             
-            <tag> one_gadget </tag>
+            <tag> bof </tag>
             
             <tag> got overwrite </tag>
+            
+            <tag> one_gadget </tag>
             
             <tag> pwn/game </tag>
             
@@ -770,9 +794,9 @@
       
         <tags>
             
-            <tag> shellcode </tag>
-            
             <tag> pwn </tag>
+            
+            <tag> shellcode </tag>
             
             <tag> CTF </tag>
             
