@@ -15,8 +15,6 @@
           
           <category> CTF </category>
           
-          <category> pwn </category>
-          
       </categories>
       
       
@@ -400,11 +398,11 @@
       
         <tags>
             
+            <tag> Hexo </tag>
+            
             <tag> docker </tag>
             
             <tag> docker-compose </tag>
-            
-            <tag> hexo </tag>
             
         </tags>
       
