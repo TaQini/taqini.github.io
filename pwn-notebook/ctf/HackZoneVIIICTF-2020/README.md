@@ -1,26 +1,3 @@
----
-title: HackZone VIII CTF Pwn Writeup
-categories:
-  - CTF
-top_img: >-
-  http://image.taqini.space/img/20200412153115.png
-cover: >-
-  http://image.taqini.space/img/20200412153115.png
-date: 2020-04-12 15:31:48
-tags:
-   - fmtstr
-   - bof
-keywords:
-description:
-comments:
-toc:
-toc_number:
-copyright:
-mathjax:
-katex:
-hide:
----
-
 # HackZone VIII CTF
 
 >  Sun, 12 April 2020, 03:00 CST — Sun, 12 April 2020, 15:00 CST
