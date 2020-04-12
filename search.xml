@@ -173,11 +173,11 @@
       
         <tags>
             
+            <tag> linux </tag>
+            
             <tag> pwn </tag>
             
             <tag> ctf </tag>
-            
-            <tag> linux </tag>
             
         </tags>
       
@@ -369,9 +369,9 @@
             
             <tag> bof </tag>
             
-            <tag> pwn </tag>
-            
             <tag> linux </tag>
+            
+            <tag> pwn </tag>
             
             <tag> got overwrite </tag>
             
