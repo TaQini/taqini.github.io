@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://taqini.space/2020/04/13/DawgCTF-2020-Pwn-Writeup/</loc>
+    
+    <lastmod>2020-04-13T05:12:40.240Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://taqini.space/2020/04/13/ByteBanditsCTF-Pwn-Writeup/</loc>
     
-    <lastmod>2020-04-12T16:36:27.971Z</lastmod>
+    <lastmod>2020-04-13T00:16:43.789Z</lastmod>
     
   </url>
   
