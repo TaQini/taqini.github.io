@@ -2,6 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://taqini.space/2020/04/13/DawgCTF-2020-Pwn-Writeup/</loc>
+    
+    <lastmod>2020-04-13T11:42:21.502Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://taqini.space/2020/04/13/DawgCTF-2020-Pwn-trASCII-Writeup/</loc>
+    
+    <lastmod>2020-04-13T11:41:35.090Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://taqini.space/todo/index.html</loc>
+    
+    <lastmod>2020-04-13T06:46:55.892Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://taqini.space/2020/04/12/HackZone-VIII-CTF-pwn-writeup/</loc>
     
     <lastmod>2020-04-13T06:18:25.432Z</lastmod>
@@ -12,13 +33,6 @@
     <loc>http://taqini.space/2020/02/27/note-bypass-canary/</loc>
     
     <lastmod>2020-04-13T06:16:13.156Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://taqini.space/2020/04/13/DawgCTF-2020-Pwn-Writeup/</loc>
-    
-    <lastmod>2020-04-13T05:57:00.525Z</lastmod>
     
   </url>
   
@@ -40,13 +54,6 @@
     <loc>http://taqini.space/2020/04/08/TG-Hack-CTF-Pwn-writeup/</loc>
     
     <lastmod>2020-04-11T20:10:51.122Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://taqini.space/todo/index.html</loc>
-    
-    <lastmod>2020-04-08T17:20:45.172Z</lastmod>
     
   </url>
   
