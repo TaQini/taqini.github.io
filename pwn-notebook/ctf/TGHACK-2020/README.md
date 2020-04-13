@@ -88,7 +88,7 @@ It's a xml language parser, so try to [XEE(**X**ML **E**xternal **E**ntity)](htt
 
 so difficult...
 
-I success in local but fail in remote...
+~~I success in local but fail in remote...~~
 
 ### seccomp rules
 
@@ -318,3 +318,8 @@ you can download full exp from my [github](https://github.com/TaQini/ctf/tree/ma
 nc ctf.taqini.space 10111
 ```
 
+### Other wp
+[wp of Will's Root](ctf/TGHACK-2020/wp_of_Will)
+
+### Great artical
+[Pivoting Around Memory](https://nickgregory.me/security/2019/04/06/pivoting-around-memory/)
