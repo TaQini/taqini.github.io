@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://taqini.space/2020/02/12/start-with-hexo/</loc>
+    <lastmod>2020-04-14</lastmod>
+  </url>  <url>
+    <loc>http://taqini.space/2020/03/02/easy-hexo/</loc>
+    <lastmod>2020-04-14</lastmod>
+  </url>  <url>
     <loc>http://taqini.space/2020/04/08/TG-Hack-CTF-Pwn-writeup/</loc>
     <lastmod>2020-04-13</lastmod>
   </url>  <url>
@@ -24,9 +30,6 @@
   </url>  <url>
     <loc>http://taqini.space/2020/04/08/docsify-plugins/</loc>
     <lastmod>2020-04-08</lastmod>
-  </url>  <url>
-    <loc>http://taqini.space/2020/03/02/easy-hexo/</loc>
-    <lastmod>2020-04-07</lastmod>
   </url>  <url>
     <loc>http://taqini.space/2020/04/05/MidnightsunCTF-2020-pwn-pwn4/</loc>
     <lastmod>2020-04-07</lastmod>
@@ -108,8 +111,5 @@
   </url>  <url>
     <loc>http://taqini.space/2020/02/18/Hexo-theme-extension/</loc>
     <lastmod>2020-02-18</lastmod>
-  </url>  <url>
-    <loc>http://taqini.space/2020/02/12/start-with-hexo/</loc>
-    <lastmod>2020-02-12</lastmod>
   </url>
 </urlset>
