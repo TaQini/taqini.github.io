@@ -244,6 +244,14 @@ $(function () {
   })
 
   /**
+   * 代碼塊全屏 - todo
+  $(document).on('click', '.code-area-warp .code_lang', function () {
+    $(this).toggleClass('code-block-fullscreen')
+    $('html').toggleClass('code-block-fullscreen-html-scroll')
+  })
+  */
+
+  /**
    * fancybox和 mediumZoom
    */
 
